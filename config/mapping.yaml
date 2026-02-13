@@ -1,0 +1,274 @@
+# Jetplan → Elektro-Raumbuch Import-Mapping-Konfiguration
+# Version: 1.0
+# Erstellt: 2026-02-13
+# 
+# Diese Datei definiert die Mapping-Regeln für den Import von Jetplan-Excel-Exporten
+# in das Elektro-Raumbuch System.
+
+version: "1.0"
+
+# ===== KATEGORIE → GEWERK MAPPING =====
+# Jetplan-Kategorie wird auf Elektro-Raumbuch Gewerk gemappt
+category_to_trade:
+  "Beleuchtung": "Beleuchtung"
+  "Steckdosen": "Steckdosen"
+  "SmartHome": "Sensoren"  # Alternative: "KNX"
+  "Daten / Multimedia": "PoE"
+  "Sensoren / Thermostate / Melder": "Sensoren"
+  "Türkommunikation": "Zugriffskontrolle"
+  "Gebäudetechnik": "HeizungKlimaLüftung"
+  "Anschlüsse": "Zentral"
+  "Verteiler": "Zentral"  # Verteilerschrank-Komponenten
+
+# ===== ELEMENTNAME → DEVICE MAPPING =====
+# Detaillierte Zuordnung von Jetplan-Elementnamen zu Elektro-Raumbuch Geräten
+# inkl. Verbindungstyp und Installationszone
+element_to_device:
+  # SmartHome / KNX
+  "BUS Raumcontroller 6-fach":
+    device: "Taster Smart"
+    connection: "KNX"
+    install_zone: "Mitte"
+    category: "Taster smart"
+  
+  "KNX Bewegungsmelder außen":
+    device: "BM - außen"
+    connection: "KNX"
+    install_zone: "oben"
+    category: "BM - außen"
+  
+  "KNX Wand Bewegungsmelder":
+    device: "BM"
+    connection: "KNX"
+    install_zone: "Mitte"
+    category: "BM"
+  
+  "KNX Präsenzmelder Decke":
+    device: "PM"
+    connection: "KNX"
+    install_zone: "Decke"
+    category: "PM"
+  
+  "KNX Rauchwarnmelder":
+    device: "Feuermelder"
+    connection: "KNX"
+    install_zone: "Decke"
+    category: "Feuermelder"
+  
+  "KNX Wetterstation":
+    device: "Wetterstation"
+    connection: "KNX"
+    install_zone: "oben"
+    category: "Wetterstation"
+  
+  "Fensterkontakt VdS":
+    device: "Kontaktmelder"
+    connection: "KNX"
+    install_zone: "oben"
+    category: "Kontaktmelder"
+  
+  "Tablet Halterung":
+    device: "Bedienpanel"
+    connection: "PoE"
+    install_zone: "Mitte"
+    category: "Bedienpanel"
+
+  # Steckdosen
+  "Schuko-Steckdose":
+    device: "Steckdose"
+    connection: "230 V AC"
+    install_zone: "Steckdose"
+    category: "ohne Schaltaktor"
+  
+  "Anschluss allgemein":
+    device: "Anschluss ohne Steckdose"
+    connection: "230 V AC"
+    install_zone: "fest"
+    category: "Anschluss ohne Steckdose"
+  
+  "Anschluss allgemein 16A":
+    device: "Anschluss ohne Steckdose"
+    connection: "230 V AC"
+    install_zone: "fest"
+    category: "Anschluss ohne Steckdose"
+
+  # Beleuchtung
+  "Deckenleuchte":
+    device: "Deckenleuchte"
+    connection: "230 V AC"
+    install_zone: "Decke"
+    category: "nicht dimmbar"
+  
+  "Einbau-Spot":
+    device: "Spot"
+    connection: "230 V AC"
+    install_zone: "Decke"
+    category: "dimmbar"
+  
+  "LED Stripe":
+    device: "LED Strip"
+    connection: "230 V AC"
+    install_zone: "fest"
+    category: "dimmbar"
+  
+  "Wandleuchte":
+    device: "Wandleuchte"
+    connection: "230 V AC"
+    install_zone: "Mitte"
+    category: "nicht dimmbar"
+
+  # Daten / Multimedia
+  "Datendose RJ45 einfach":
+    device: "Ethernet"
+    connection: "PoE"
+    install_zone: "Ethernet"
+    category: "Ethernet"
+  
+  "Datendose RJ45 duplex":
+    device: "Ethernet"
+    connection: "PoE"
+    install_zone: "Ethernet"
+    category: "Ethernet"
+  
+  "Deckenlautsprecher":
+    device: "Lautsprecher Decke"
+    connection: "PoE"
+    install_zone: "Decke"
+    category: "Audio"
+  
+  "Multimediadose HDMI":
+    device: "HDMI Dose"
+    connection: "Ethernet"
+    install_zone: "Ethernet"
+    category: "Multimedia"
+  
+  "Kamera":
+    device: "Kamera"
+    connection: "PoE"
+    install_zone: "oben"
+    category: "Überwachung"
+
+  # Türkommunikation
+  "Klingeltaster":
+    device: "Klingel"
+    connection: "24 V DC"
+    install_zone: "Mitte"
+    category: "Türkommunikation"
+
+  # Beschattung / Gebäudetechnik
+  "Markisenanschluss":
+    device: "Markise"
+    connection: "230 V AC - Beschattung"
+    install_zone: "fest"
+    category: "Markise"
+  
+  "Erdkabel":
+    device: "Erdkabel"
+    connection: "230 V AC"
+    install_zone: "Boden"
+    category: "Kabel"
+
+# ===== STOCK → ZONE MAPPING =====
+# Jetplan "Stock" (EG, OG, etc.) wird auf Zone gemappt
+stock_to_zone:
+  "EG":
+    code: "EG"
+    name: "Erdgeschoss"
+  "OG":
+    code: "OG"
+    name: "Obergeschoss"
+  "1.OG":
+    code: "O1"
+    name: "1. Obergeschoss"
+  "2.OG":
+    code: "O2"
+    name: "2. Obergeschoss"
+  "UG":
+    code: "UG"
+    name: "Untergeschoss"
+  "DG":
+    code: "DG"
+    name: "Dachgeschoss"
+  "KG":
+    code: "KG"
+    name: "Kellergeschoss"
+
+# ===== DEFAULT-WERTE =====
+# Werden verwendet, wenn kein spezifisches Mapping gefunden wird
+defaults:
+  install_zone: "Mitte"
+  connection: "230 V AC"
+  quantity: 1
+  category: "Allgemein"
+
+# ===== IMPORT-OPTIONEN =====
+import_options:
+  # Automatische Code-Generierung aktivieren
+  generate_codes: true
+  
+  # Code-Format für Raumcodes
+  # Verfügbare Platzhalter: {zone_code}, {room_number}
+  room_code_format: "{zone_code}{room_number}"
+  
+  # Code-Format für Geräte-Codes
+  # Verfügbare Platzhalter: {room_code}, {device_number}
+  device_code_format: "{room_code}.{device_number}"
+  
+  # KNX-Gruppenadressen nach Import automatisch generieren
+  generate_group_addresses: false
+  
+  # Validierung vor Import durchführen
+  validate: true
+  
+  # Import-Vorschau anzeigen (UI)
+  preview: true
+  
+  # Bei unbekannten Elementen Warnung ausgeben
+  warn_unknown_elements: true
+  
+  # Bei unbekannten Kategorien Warnung ausgeben
+  warn_unknown_categories: true
+  
+  # Duplikate überspringen (basierend auf Kennung)
+  skip_duplicates: true
+
+# ===== VALIDIERUNGS-REGELN =====
+validation:
+  # Pflichtfelder beim Import
+  required_fields:
+    - "Elementname"
+    - "Raum"
+    - "Stock"
+  
+  # Maximale Anzahl Geräte pro Raum (0 = unbegrenzt)
+  max_devices_per_room: 0
+  
+  # Erlaubte Zeichen in Raumcodes (Regex)
+  room_code_pattern: "^[A-Z0-9]+$"
+  
+  # Erlaubte Zeichen in Geräte-Kennungen (Regex)
+  device_code_pattern: "^[A-Z0-9.\\-_]+$"
+
+# ===== ERWEITERTE MAPPINGS =====
+# Für zukünftige Erweiterungen
+
+# Sicherung → RCD/LS Mapping (für Phase 2: Verteilerschrank)
+sicherung_mapping:
+  "KNX": 
+    rcd: "RCD1"
+    ls: "LS1"
+  "230 V AC":
+    rcd: "RCD2"
+    ls: "LS2"
+
+# Adresse → Gruppenadressen-Vorschläge (für Phase 2: KNX-GA)
+# Wird verwendet, wenn Jetplan-Export bereits KNX-Adressen enthält
+address_to_group_address:
+  # Format: "Jetplan-Adresse": { hg: X, mg: Y, ug: Z }
+  # Beispiel:
+  # "1/0/1": { hg: 1, mg: 0, ug: 1 }
+
+# ===== NOTIZEN =====
+# - Dieses Mapping kann über die UI angepasst werden (Phase 3)
+# - Neue Elementnamen können während des Imports manuell zugeordnet werden
+# - Das System lernt aus manuellen Zuordnungen und erweitert dieses Mapping automatisch
