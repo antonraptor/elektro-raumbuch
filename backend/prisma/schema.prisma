@@ -1,6 +1,3 @@
-// Elektro-Raumbuch Prisma Schema
-// Database: SQLite
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,74 +7,66 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ===== CORE MODELS =====
-
 model Project {
-  id          String   @id @default(cuid())
-  name        String
-  description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  zones         Zone[]
-  trades        Trade[]
-  connections   Connection[]
-  installZones  InstallZone[]
-  devices       Device[]
+  id           String        @id @default(cuid())
+  name         String
+  description  String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  connections  Connection[]
+  devices      Device[]
+  installZones InstallZone[]
+  trades       Trade[]
+  zones        Zone[]
 
   @@map("projects")
 }
 
 model Zone {
-  id        String @id @default(cuid())
+  id        String  @id @default(cuid())
   projectId String
   code      String
   name      String
   order     Int
-
-  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  rooms   Room[]
+  rooms     Room[]
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@unique([projectId, code])
   @@map("zones")
 }
 
 model Room {
-  id     String @id @default(cuid())
-  zoneId String
-  code   String
-  number Int
-  name   String
-  order  Int
-
-  zone    Zone         @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+  id      String       @id @default(cuid())
+  zoneId  String
+  code    String
+  number  Int
+  name    String
+  order   Int
   devices RoomDevice[]
+  zone    Zone         @relation(fields: [zoneId], references: [id], onDelete: Cascade)
 
   @@unique([zoneId, code])
   @@map("rooms")
 }
 
-// ===== DEVICE MODELS =====
-
 model Device {
-  id          String  @id @default(cuid())
+  id          String       @id @default(cuid())
   projectId   String
   name        String
   description String?
   code        String?
   tradeId     String?
   categoryId  String?
-
+  category    Category?    @relation(fields: [categoryId], references: [id])
+  trade       Trade?       @relation(fields: [tradeId], references: [id])
   project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  trade       Trade?       @relation(fields: [tradeId], references: [id], onDelete: SetNull)
-  category    Category?    @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   roomDevices RoomDevice[]
 
   @@map("devices")
 }
 
 model RoomDevice {
-  id            String  @id @default(cuid())
+  id            String       @id @default(cuid())
   roomId        String
   deviceId      String?
   designation   String
@@ -89,45 +78,40 @@ model RoomDevice {
   installZoneId String?
   cableType     String?
   target        String?
-  quantity      Int     @default(1)
+  quantity      Int          @default(1)
   order         Int
-
-  room        Room         @relation(fields: [roomId], references: [id], onDelete: Cascade)
-  device      Device?      @relation(fields: [deviceId], references: [id], onDelete: SetNull)
-  trade       Trade?       @relation(fields: [tradeId], references: [id], onDelete: SetNull)
-  category    Category?    @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  connection  Connection?  @relation(fields: [connectionId], references: [id], onDelete: SetNull)
-  installZone InstallZone? @relation(fields: [installZoneId], references: [id], onDelete: SetNull)
+  installZone   InstallZone? @relation(fields: [installZoneId], references: [id])
+  connection    Connection?  @relation(fields: [connectionId], references: [id])
+  category      Category?    @relation(fields: [categoryId], references: [id])
+  trade         Trade?       @relation(fields: [tradeId], references: [id])
+  device        Device?      @relation(fields: [deviceId], references: [id])
+  room          Room         @relation(fields: [roomId], references: [id], onDelete: Cascade)
 
   @@map("room_devices")
 }
 
-// ===== METADATA MODELS =====
-
 model Trade {
-  id        String  @id @default(cuid())
-  projectId String
-  name      String
-  code      String?
-  hgNumber  Int?
-  order     Int
-
-  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  id          String       @id @default(cuid())
+  projectId   String
+  name        String
+  code        String?
+  hgNumber    Int?
+  order       Int
   categories  Category[]
   devices     Device[]
   roomDevices RoomDevice[]
+  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@unique([projectId, code])
   @@map("trades")
 }
 
 model Category {
-  id      String @id @default(cuid())
-  tradeId String
-  name    String
-  code    String?
-  order   Int
-
+  id          String       @id @default(cuid())
+  tradeId     String
+  name        String
+  code        String?
+  order       Int
   trade       Trade        @relation(fields: [tradeId], references: [id], onDelete: Cascade)
   devices     Device[]
   roomDevices RoomDevice[]
@@ -137,12 +121,11 @@ model Category {
 }
 
 model Connection {
-  id        String  @id @default(cuid())
-  projectId String
-  name      String
-  code      String?
-  voltage   String?
-
+  id          String       @id @default(cuid())
+  projectId   String
+  name        String
+  code        String?
+  voltage     String?
   project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
   roomDevices RoomDevice[]
 
@@ -151,12 +134,11 @@ model Connection {
 }
 
 model InstallZone {
-  id        String @id @default(cuid())
-  projectId String
-  name      String
-  code      String?
-  order     Int
-
+  id          String       @id @default(cuid())
+  projectId   String
+  name        String
+  code        String?
+  order       Int
   project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
   roomDevices RoomDevice[]
 

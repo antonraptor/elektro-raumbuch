@@ -1,5 +1,5 @@
 import * as XLSX from 'xlsx';
-import { prisma } from '../utils/prisma';
+import prisma from '../utils/prisma';
 
 interface ExcelRoomRow {
   Zone?: string;
@@ -22,7 +22,7 @@ export class ExcelImportService {
     buffer: Buffer,
     projectName: string,
     description?: string
-  ): Promise<{ projectId: number; stats: any }> {
+  ): Promise<{ projectId: string; stats: any }> {
     // Parse Excel file
     const workbook = XLSX.read(buffer, { type: 'buffer' });
     
@@ -54,10 +54,10 @@ export class ExcelImportService {
     };
 
     // Create metadata first (Gewerke, Kategorien, Verbindungen, Installationszonen)
-    const tradeMap = new Map<string, number>();
-    const categoryMap = new Map<string, number>();
-    const connectionMap = new Map<string, number>();
-    const installZoneMap = new Map<string, number>();
+    const tradeMap = new Map<string, string>();
+    const categoryMap = new Map<string, string>();
+    const connectionMap = new Map<string, string>();
+    const installZoneMap = new Map<string, string>();
 
     // Collect unique values
     const uniqueTrades = new Set<string>();
@@ -76,27 +76,34 @@ export class ExcelImportService {
     });
 
     // Create Trades
-    let sortOrder = 1;
+    let order = 1;
     for (const tradeName of uniqueTrades) {
+      const code = tradeName.substring(0, 3).toUpperCase();
       const trade = await prisma.trade.create({
         data: {
           projectId: project.id,
           name: tradeName,
-          sortOrder: sortOrder++,
+          code: code,
+          order: order++,
         },
       });
       tradeMap.set(tradeName, trade.id);
       stats.trades++;
     }
 
-    // Create Categories
-    sortOrder = 1;
+    // Create Categories (we'll assign them to the first trade for now)
+    order = 1;
+    const firstTradeId = Array.from(tradeMap.values())[0];
     for (const categoryName of uniqueCategories) {
+      if (!firstTradeId) continue;
+      
+      const code = categoryName.substring(0, 3).toUpperCase();
       const category = await prisma.category.create({
         data: {
-          projectId: project.id,
+          tradeId: firstTradeId,
           name: categoryName,
-          sortOrder: sortOrder++,
+          code: code,
+          order: order++,
         },
       });
       categoryMap.set(categoryName, category.id);
@@ -104,13 +111,13 @@ export class ExcelImportService {
     }
 
     // Create Connections
-    sortOrder = 1;
     for (const connectionName of uniqueConnections) {
+      const code = connectionName.substring(0, 3).toUpperCase();
       const connection = await prisma.connection.create({
         data: {
           projectId: project.id,
           name: connectionName,
-          sortOrder: sortOrder++,
+          code: code,
         },
       });
       connectionMap.set(connectionName, connection.id);
@@ -118,13 +125,15 @@ export class ExcelImportService {
     }
 
     // Create InstallZones
-    sortOrder = 1;
+    order = 1;
     for (const installZoneName of uniqueInstallZones) {
+      const code = installZoneName.substring(0, 3).toUpperCase();
       const installZone = await prisma.installZone.create({
         data: {
           projectId: project.id,
           name: installZoneName,
-          sortOrder: sortOrder++,
+          code: code,
+          order: order++,
         },
       });
       installZoneMap.set(installZoneName, installZone.id);
@@ -132,11 +141,13 @@ export class ExcelImportService {
     }
 
     // Create zones, rooms, and devices
-    const zoneMap = new Map<string, number>();
-    const roomMap = new Map<string, number>();
-    const deviceMap = new Map<string, number>();
+    const zoneMap = new Map<string, string>();
+    const roomMap = new Map<string, string>();
+    const deviceMap = new Map<string, string>();
 
-    let zoneSortOrder = 1;
+    let zoneOrder = 1;
+    let roomOrder = 1;
+    
     for (const row of rows) {
       if (!row.Zone || !row.Raum) continue;
 
@@ -145,8 +156,9 @@ export class ExcelImportService {
         const zone = await prisma.zone.create({
           data: {
             projectId: project.id,
+            code: row.Zone.substring(0, 3).toUpperCase(),
             name: row.Zone,
-            sortOrder: zoneSortOrder++,
+            order: zoneOrder++,
           },
         });
         zoneMap.set(row.Zone, zone.id);
@@ -156,12 +168,14 @@ export class ExcelImportService {
       // Create or get room
       const roomKey = `${row.Zone}:${row['Raum-Code'] || row.Raum}`;
       if (!roomMap.has(roomKey)) {
+        const roomCode = row['Raum-Code'] || row.Raum.substring(0, 3).toUpperCase();
         const room = await prisma.room.create({
           data: {
-            projectId: project.id,
             zoneId: zoneMap.get(row.Zone)!,
-            roomNumber: row['Raum-Code'] || '',
+            code: roomCode,
+            number: roomOrder,
             name: row.Raum,
+            order: roomOrder++,
           },
         });
         roomMap.set(roomKey, room.id);
@@ -181,11 +195,9 @@ export class ExcelImportService {
             data: {
               projectId: project.id,
               name: row.Geraet,
+              code: row.Geraet.substring(0, 5).toUpperCase(),
               tradeId: tradeName ? tradeMap.get(tradeName) : undefined,
               categoryId: row.Kategorie ? categoryMap.get(row.Kategorie) : undefined,
-              connectionId: row.Verbindung ? connectionMap.get(row.Verbindung) : undefined,
-              installZoneId: row.Installationszone ? installZoneMap.get(row.Installationszone) : undefined,
-              isActive: true,
             },
           });
           deviceMap.set(deviceKey, device.id);
@@ -193,13 +205,22 @@ export class ExcelImportService {
         }
 
         // Create RoomDevice (assignment of device to room)
+        const tradeName = row.Geraet.includes('-') 
+          ? row.Geraet.split('-')[0].trim() 
+          : undefined;
+
         await prisma.roomDevice.create({
           data: {
             roomId: roomMap.get(roomKey)!,
             deviceId: deviceMap.get(deviceKey)!,
+            designation: row.Geraet,
+            code: row.Geraet.substring(0, 5).toUpperCase(),
+            tradeId: tradeName ? tradeMap.get(tradeName) : undefined,
+            categoryId: row.Kategorie ? categoryMap.get(row.Kategorie) : undefined,
+            connectionId: row.Verbindung ? connectionMap.get(row.Verbindung) : undefined,
+            installZoneId: row.Installationszone ? installZoneMap.get(row.Installationszone) : undefined,
             quantity: row.Anzahl || 1,
-            position: row.Position,
-            notes: row.Notizen,
+            order: roomOrder++,
           },
         });
       }
