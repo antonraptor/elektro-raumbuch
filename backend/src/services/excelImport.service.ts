@@ -83,8 +83,18 @@ export class ExcelImportService {
 
     // Create Trades
     let order = 1;
+    const usedTradeCodes = new Set<string>();
+    
     for (const tradeName of uniqueTrades) {
-      const code = tradeName.substring(0, 3).toUpperCase();
+      // Generate unique code
+      let code = tradeName.substring(0, 3).toUpperCase();
+      let counter = 1;
+      while (usedTradeCodes.has(code)) {
+        code = tradeName.substring(0, 2).toUpperCase() + counter;
+        counter++;
+      }
+      usedTradeCodes.add(code);
+      
       const trade = await prisma.trade.create({
         data: {
           projectId: project.id,
@@ -100,10 +110,20 @@ export class ExcelImportService {
     // Create Categories (we'll assign them to the first trade for now)
     order = 1;
     const firstTradeId = Array.from(tradeMap.values())[0];
+    const usedCategoryCodes = new Set<string>();
+    
     for (const categoryName of uniqueCategories) {
       if (!firstTradeId) continue;
       
-      const code = categoryName.substring(0, 3).toUpperCase();
+      // Generate unique code
+      let code = categoryName.substring(0, 3).toUpperCase();
+      let counter = 1;
+      while (usedCategoryCodes.has(code)) {
+        code = categoryName.substring(0, 2).toUpperCase() + counter;
+        counter++;
+      }
+      usedCategoryCodes.add(code);
+      
       const category = await prisma.category.create({
         data: {
           tradeId: firstTradeId,
@@ -117,8 +137,18 @@ export class ExcelImportService {
     }
 
     // Create Connections
+    const usedConnectionCodes = new Set<string>();
+    
     for (const connectionName of uniqueConnections) {
-      const code = connectionName.substring(0, 3).toUpperCase();
+      // Generate unique code
+      let code = connectionName.substring(0, 3).toUpperCase();
+      let counter = 1;
+      while (usedConnectionCodes.has(code)) {
+        code = connectionName.substring(0, 2).toUpperCase() + counter;
+        counter++;
+      }
+      usedConnectionCodes.add(code);
+      
       const connection = await prisma.connection.create({
         data: {
           projectId: project.id,
@@ -132,8 +162,18 @@ export class ExcelImportService {
 
     // Create InstallZones
     order = 1;
+    const usedInstallZoneCodes = new Set<string>();
+    
     for (const installZoneName of uniqueInstallZones) {
-      const code = installZoneName.substring(0, 3).toUpperCase();
+      // Generate unique code
+      let code = installZoneName.substring(0, 3).toUpperCase();
+      let counter = 1;
+      while (usedInstallZoneCodes.has(code)) {
+        code = installZoneName.substring(0, 2).toUpperCase() + counter;
+        counter++;
+      }
+      usedInstallZoneCodes.add(code);
+      
       const installZone = await prisma.installZone.create({
         data: {
           projectId: project.id,
