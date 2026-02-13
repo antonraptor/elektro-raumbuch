@@ -38,8 +38,8 @@ export class ExcelImportService {
       throw new Error('Worksheet "Raumbuch" not found in Excel file');
     }
 
-    // Convert to JSON
-    const rows: ExcelRoomRow[] = XLSX.utils.sheet_to_json(raumbuchSheet);
+    // Convert to JSON (skip first 2 rows, use row 3 as header)
+    const rows: ExcelRoomRow[] = XLSX.utils.sheet_to_json(raumbuchSheet, { range: 2 });
 
     // Create project
     const project = await prisma.project.create({
