@@ -16,3 +16,12 @@ body {
   min-height: 100vh;
 }
 
+/* Selected row highlighting */
+.selected-row {
+  background-color: #e6f7ff !important;
+}
+
+.selected-row:hover {
+  background-color: #bae7ff !important;
+}
+
