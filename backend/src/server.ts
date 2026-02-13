@@ -11,6 +11,7 @@ import deviceRoutes from './routes/device.routes';
 import tradeRoutes from './routes/trade.routes';
 import connectionRoutes from './routes/connection.routes';
 import installZoneRoutes from './routes/installZone.routes';
+import importRoutes from './routes/import.routes';
 
 // Load environment variables
 dotenv.config();
@@ -39,6 +40,7 @@ app.use('/api/devices', deviceRoutes);
 app.use('/api/trades', tradeRoutes);
 app.use('/api/connections', connectionRoutes);
 app.use('/api/install-zones', installZoneRoutes);
+app.use('/api/import', importRoutes);
 
 // Health check
 app.get('/health', (req: Request, res: Response) => {
