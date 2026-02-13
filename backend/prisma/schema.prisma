@@ -1,0 +1,165 @@
+// Elektro-Raumbuch Prisma Schema
+// Database: SQLite
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ===== CORE MODELS =====
+
+model Project {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  zones         Zone[]
+  trades        Trade[]
+  connections   Connection[]
+  installZones  InstallZone[]
+  devices       Device[]
+
+  @@map("projects")
+}
+
+model Zone {
+  id        String @id @default(cuid())
+  projectId String
+  code      String
+  name      String
+  order     Int
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  rooms   Room[]
+
+  @@unique([projectId, code])
+  @@map("zones")
+}
+
+model Room {
+  id     String @id @default(cuid())
+  zoneId String
+  code   String
+  number Int
+  name   String
+  order  Int
+
+  zone    Zone         @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+  devices RoomDevice[]
+
+  @@unique([zoneId, code])
+  @@map("rooms")
+}
+
+// ===== DEVICE MODELS =====
+
+model Device {
+  id          String  @id @default(cuid())
+  projectId   String
+  name        String
+  description String?
+  code        String?
+  tradeId     String?
+  categoryId  String?
+
+  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  trade       Trade?       @relation(fields: [tradeId], references: [id], onDelete: SetNull)
+  category    Category?    @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  roomDevices RoomDevice[]
+
+  @@map("devices")
+}
+
+model RoomDevice {
+  id            String  @id @default(cuid())
+  roomId        String
+  deviceId      String?
+  designation   String
+  code          String?
+  totalCode     String?
+  tradeId       String?
+  categoryId    String?
+  connectionId  String?
+  installZoneId String?
+  cableType     String?
+  target        String?
+  quantity      Int     @default(1)
+  order         Int
+
+  room        Room         @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  device      Device?      @relation(fields: [deviceId], references: [id], onDelete: SetNull)
+  trade       Trade?       @relation(fields: [tradeId], references: [id], onDelete: SetNull)
+  category    Category?    @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  connection  Connection?  @relation(fields: [connectionId], references: [id], onDelete: SetNull)
+  installZone InstallZone? @relation(fields: [installZoneId], references: [id], onDelete: SetNull)
+
+  @@map("room_devices")
+}
+
+// ===== METADATA MODELS =====
+
+model Trade {
+  id        String  @id @default(cuid())
+  projectId String
+  name      String
+  code      String?
+  hgNumber  Int?
+  order     Int
+
+  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  categories  Category[]
+  devices     Device[]
+  roomDevices RoomDevice[]
+
+  @@unique([projectId, code])
+  @@map("trades")
+}
+
+model Category {
+  id      String @id @default(cuid())
+  tradeId String
+  name    String
+  code    String?
+  order   Int
+
+  trade       Trade        @relation(fields: [tradeId], references: [id], onDelete: Cascade)
+  devices     Device[]
+  roomDevices RoomDevice[]
+
+  @@unique([tradeId, code])
+  @@map("categories")
+}
+
+model Connection {
+  id        String  @id @default(cuid())
+  projectId String
+  name      String
+  code      String?
+  voltage   String?
+
+  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  roomDevices RoomDevice[]
+
+  @@unique([projectId, code])
+  @@map("connections")
+}
+
+model InstallZone {
+  id        String @id @default(cuid())
+  projectId String
+  name      String
+  code      String?
+  order     Int
+
+  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  roomDevices RoomDevice[]
+
+  @@unique([projectId, code])
+  @@map("install_zones")
+}
