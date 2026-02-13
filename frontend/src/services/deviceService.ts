@@ -3,13 +3,13 @@ import type * as Types from '../types';
 
 export const deviceService = {
   // Get devices by project ID
-  async getByProject(projectId: number): Promise<Types.Device[]> {
+  async getByProject(projectId: string): Promise<Types.Device[]> {
     const response = await api.get<Types.Device[]>(`/devices/project/${projectId}`);
     return response.data;
   },
 
   // Get device by ID
-  async getById(id: number): Promise<Types.Device> {
+  async getById(id: string): Promise<Types.Device> {
     const response = await api.get<Types.Device>(`/devices/${id}`);
     return response.data;
   },
@@ -21,13 +21,13 @@ export const deviceService = {
   },
 
   // Update device
-  async update(id: number, data: Types.UpdateDevice): Promise<Types.Device> {
+  async update(id: string, data: Types.UpdateDevice): Promise<Types.Device> {
     const response = await api.put<Types.Device>(`/devices/${id}`, data);
     return response.data;
   },
 
   // Delete device
-  async delete(id: number): Promise<void> {
+  async delete(id: string): Promise<void> {
     await api.delete(`/devices/${id}`);
   },
 };

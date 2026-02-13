@@ -3,7 +3,7 @@ import type * as Types from '../types';
 
 // Trade Service
 export const tradeService = {
-  async getByProject(projectId: number): Promise<Types.Trade[]> {
+  async getByProject(projectId: string): Promise<Types.Trade[]> {
     const response = await api.get<Types.Trade[]>(`/trades/project/${projectId}`);
     return response.data;
   },
@@ -13,20 +13,25 @@ export const tradeService = {
     return response.data;
   },
 
-  async update(id: number, data: Types.UpdateTrade): Promise<Types.Trade> {
+  async update(id: string, data: Types.UpdateTrade): Promise<Types.Trade> {
     const response = await api.put<Types.Trade>(`/trades/${id}`, data);
     return response.data;
   },
 
-  async delete(id: number): Promise<void> {
+  async delete(id: string): Promise<void> {
     await api.delete(`/trades/${id}`);
   },
 };
 
 // Category Service
 export const categoryService = {
-  async getByProject(projectId: number): Promise<Types.Category[]> {
+  async getByProject(projectId: string): Promise<Types.Category[]> {
     const response = await api.get<Types.Category[]>(`/categories/project/${projectId}`);
+    return response.data;
+  },
+
+  async getByTrade(tradeId: string): Promise<Types.Category[]> {
+    const response = await api.get<Types.Category[]>(`/categories/trade/${tradeId}`);
     return response.data;
   },
 
@@ -35,19 +40,19 @@ export const categoryService = {
     return response.data;
   },
 
-  async update(id: number, data: Types.UpdateCategory): Promise<Types.Category> {
+  async update(id: string, data: Types.UpdateCategory): Promise<Types.Category> {
     const response = await api.put<Types.Category>(`/categories/${id}`, data);
     return response.data;
   },
 
-  async delete(id: number): Promise<void> {
+  async delete(id: string): Promise<void> {
     await api.delete(`/categories/${id}`);
   },
 };
 
 // Connection Service
 export const connectionService = {
-  async getByProject(projectId: number): Promise<Types.Connection[]> {
+  async getByProject(projectId: string): Promise<Types.Connection[]> {
     const response = await api.get<Types.Connection[]>(`/connections/project/${projectId}`);
     return response.data;
   },
@@ -57,19 +62,19 @@ export const connectionService = {
     return response.data;
   },
 
-  async update(id: number, data: Types.UpdateConnection): Promise<Types.Connection> {
+  async update(id: string, data: Types.UpdateConnection): Promise<Types.Connection> {
     const response = await api.put<Types.Connection>(`/connections/${id}`, data);
     return response.data;
   },
 
-  async delete(id: number): Promise<void> {
+  async delete(id: string): Promise<void> {
     await api.delete(`/connections/${id}`);
   },
 };
 
 // InstallZone Service
 export const installZoneService = {
-  async getByProject(projectId: number): Promise<Types.InstallZone[]> {
+  async getByProject(projectId: string): Promise<Types.InstallZone[]> {
     const response = await api.get<Types.InstallZone[]>(`/install-zones/project/${projectId}`);
     return response.data;
   },
@@ -79,12 +84,12 @@ export const installZoneService = {
     return response.data;
   },
 
-  async update(id: number, data: Types.UpdateInstallZone): Promise<Types.InstallZone> {
+  async update(id: string, data: Types.UpdateInstallZone): Promise<Types.InstallZone> {
     const response = await api.put<Types.InstallZone>(`/install-zones/${id}`, data);
     return response.data;
   },
 
-  async delete(id: number): Promise<void> {
+  async delete(id: string): Promise<void> {
     await api.delete(`/install-zones/${id}`);
   },
 };
