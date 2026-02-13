@@ -139,26 +139,136 @@ export interface ApiError {
 }
 
 // Form Types (for creating/updating entities)
-export type CreateProject = Omit<Project, 'id' | 'createdAt' | 'updatedAt'>;
-export type UpdateProject = Partial<CreateProject>;
+export interface CreateProject {
+  name: string;
+  description?: string;
+  client?: string;
+  location?: string;
+}
 
-export type CreateZone = Omit<Zone, 'id' | 'createdAt' | 'updatedAt'>;
-export type UpdateZone = Partial<CreateZone>;
+export interface UpdateProject {
+  name?: string;
+  description?: string;
+  client?: string;
+  location?: string;
+}
 
-export type CreateRoom = Omit<Room, 'id' | 'createdAt' | 'updatedAt'>;
-export type UpdateRoom = Partial<CreateRoom>;
+export interface CreateZone {
+  projectId: number;
+  name: string;
+  description?: string;
+  sortOrder: number;
+}
 
-export type CreateDevice = Omit<Device, 'id' | 'createdAt' | 'updatedAt'>;
-export type UpdateDevice = Partial<CreateDevice>;
+export interface UpdateZone {
+  projectId?: number;
+  name?: string;
+  description?: string;
+  sortOrder?: number;
+}
 
-export type CreateTrade = Omit<Trade, 'id' | 'createdAt' | 'updatedAt'>;
-export type UpdateTrade = Partial<CreateTrade>;
+export interface CreateRoom {
+  projectId: number;
+  zoneId: number;
+  roomNumber: string;
+  name: string;
+  area?: number;
+  notes?: string;
+}
 
-export type CreateCategory = Omit<Category, 'id' | 'createdAt' | 'updatedAt'>;
-export type UpdateCategory = Partial<CreateCategory>;
+export interface UpdateRoom {
+  projectId?: number;
+  zoneId?: number;
+  roomNumber?: string;
+  name?: string;
+  area?: number;
+  notes?: string;
+}
 
-export type CreateConnection = Omit<Connection, 'id' | 'createdAt' | 'updatedAt'>;
-export type UpdateConnection = Partial<CreateConnection>;
+export interface CreateDevice {
+  projectId: number;
+  name: string;
+  description?: string;
+  manufacturer?: string;
+  model?: string;
+  tradeId?: number;
+  categoryId?: number;
+  connectionId?: number;
+  installZoneId?: number;
+  isActive: boolean;
+}
 
-export type CreateInstallZone = Omit<InstallZone, 'id' | 'createdAt' | 'updatedAt'>;
-export type UpdateInstallZone = Partial<CreateInstallZone>;
+export interface UpdateDevice {
+  projectId?: number;
+  name?: string;
+  description?: string;
+  manufacturer?: string;
+  model?: string;
+  tradeId?: number;
+  categoryId?: number;
+  connectionId?: number;
+  installZoneId?: number;
+  isActive?: boolean;
+}
+
+export interface CreateTrade {
+  projectId: number;
+  name: string;
+  description?: string;
+  color?: string;
+  sortOrder: number;
+}
+
+export interface UpdateTrade {
+  projectId?: number;
+  name?: string;
+  description?: string;
+  color?: string;
+  sortOrder?: number;
+}
+
+export interface CreateCategory {
+  projectId: number;
+  tradeId?: number;
+  name: string;
+  description?: string;
+  sortOrder: number;
+}
+
+export interface UpdateCategory {
+  projectId?: number;
+  tradeId?: number;
+  name?: string;
+  description?: string;
+  sortOrder?: number;
+}
+
+export interface CreateConnection {
+  projectId: number;
+  name: string;
+  description?: string;
+  voltage?: string;
+  sortOrder: number;
+}
+
+export interface UpdateConnection {
+  projectId?: number;
+  name?: string;
+  description?: string;
+  voltage?: string;
+  sortOrder?: number;
+}
+
+export interface CreateInstallZone {
+  projectId: number;
+  name: string;
+  description?: string;
+  sortOrder: number;
+}
+
+export interface UpdateInstallZone {
+  projectId?: number;
+  name?: string;
+  description?: string;
+  sortOrder?: number;
+}

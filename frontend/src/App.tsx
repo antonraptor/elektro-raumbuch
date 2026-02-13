@@ -1,7 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
-import deDE from 'antd/locale/de_DE';
 import AppLayout from './components/layout/AppLayout';
 import Dashboard from './pages/Dashboard';
 import Raumbuch from './pages/Raumbuch';
@@ -11,7 +10,7 @@ import Settings from './pages/Settings';
 
 function App() {
   return (
-    <ConfigProvider locale={deDE}>
+    <ConfigProvider>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<AppLayout />}>
