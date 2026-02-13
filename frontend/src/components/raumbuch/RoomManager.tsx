@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Table, Button, Space, Popconfirm, message, Modal, Form, Input, InputNumber } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Card, Table, Button, Space, Popconfirm, message, Modal, Form, Input, InputNumber, Drawer } from 'antd';
+import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
 import { roomService } from '../../services';
 import type * as Types from '../../types';
+import RoomDeviceList from '../roomDevices/RoomDeviceList';
 
 interface RoomManagerProps {
   projectId: string;
@@ -14,6 +15,8 @@ const RoomManager: React.FC<RoomManagerProps> = ({ projectId, zoneId }) => {
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRoom, setEditingRoom] = useState<Types.Room | null>(null);
+  const [selectedRoom, setSelectedRoom] = useState<Types.Room | null>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -90,12 +93,17 @@ const RoomManager: React.FC<RoomManagerProps> = ({ projectId, zoneId }) => {
     }
   };
 
+  const handleViewDevices = (room: Types.Room) => {
+    setSelectedRoom(room);
+    setIsDrawerOpen(true);
+  };
+
   const columns = [
     {
       title: 'Code',
       dataIndex: 'code',
       key: 'code',
-      width: '15%',
+      width: '12%',
       sorter: (a: Types.Room, b: Types.Room) => a.code.localeCompare(b.code),
     },
     {
@@ -109,14 +117,22 @@ const RoomManager: React.FC<RoomManagerProps> = ({ projectId, zoneId }) => {
       title: 'Raumname',
       dataIndex: 'name',
       key: 'name',
-      width: '55%',
+      width: '48%',
     },
     {
       title: 'Aktionen',
       key: 'actions',
-      width: '20%',
+      width: '30%',
       render: (_: any, record: Types.Room) => (
         <Space>
+          <Button
+            type="default"
+            size="small"
+            icon={<EyeOutlined />}
+            onClick={() => handleViewDevices(record)}
+          >
+            Geräte
+          </Button>
           <Button
             type="link"
             size="small"
@@ -197,6 +213,25 @@ const RoomManager: React.FC<RoomManagerProps> = ({ projectId, zoneId }) => {
           </Form.Item>
         </Form>
       </Modal>
+
+      <Drawer
+        title={selectedRoom ? `${selectedRoom.code} - ${selectedRoom.name}` : 'Raumdetails'}
+        placement="right"
+        width="80%"
+        onClose={() => {
+          setIsDrawerOpen(false);
+          setSelectedRoom(null);
+        }}
+        open={isDrawerOpen}
+      >
+        {selectedRoom && (
+          <RoomDeviceList 
+            roomId={selectedRoom.id} 
+            roomName={selectedRoom.name}
+            projectId={projectId}
+          />
+        )}
+      </Drawer>
     </>
   );
 };
