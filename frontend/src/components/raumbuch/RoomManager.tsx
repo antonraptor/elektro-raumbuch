@@ -5,8 +5,8 @@ import { roomService } from '../../services';
 import type * as Types from '../../types';
 
 interface RoomManagerProps {
-  projectId: number;
-  zoneId: number;
+  projectId: string;
+  zoneId: string;
 }
 
 const RoomManager: React.FC<RoomManagerProps> = ({ projectId, zoneId }) => {
@@ -55,10 +55,14 @@ const RoomManager: React.FC<RoomManagerProps> = ({ projectId, zoneId }) => {
         await roomService.update(editingRoom.id, values);
         message.success('Raum aktualisiert');
       } else {
+        // Get next order
+        const nextOrder = rooms.length;
         await roomService.create({
-          projectId,
           zoneId,
-          ...values,
+          code: values.code,
+          number: values.number,
+          name: values.name,
+          order: nextOrder,
         });
         message.success('Raum erstellt');
       }
@@ -75,7 +79,7 @@ const RoomManager: React.FC<RoomManagerProps> = ({ projectId, zoneId }) => {
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     try {
       await roomService.delete(id);
       message.success('Raum gelöscht');
@@ -88,36 +92,29 @@ const RoomManager: React.FC<RoomManagerProps> = ({ projectId, zoneId }) => {
 
   const columns = [
     {
-      title: 'Raumnummer',
-      dataIndex: 'roomNumber',
-      key: 'roomNumber',
+      title: 'Code',
+      dataIndex: 'code',
+      key: 'code',
       width: '15%',
-      sorter: (a: Types.Room, b: Types.Room) => a.roomNumber.localeCompare(b.roomNumber),
+      sorter: (a: Types.Room, b: Types.Room) => a.code.localeCompare(b.code),
+    },
+    {
+      title: 'Nummer',
+      dataIndex: 'number',
+      key: 'number',
+      width: '10%',
+      sorter: (a: Types.Room, b: Types.Room) => a.number - b.number,
     },
     {
       title: 'Raumname',
       dataIndex: 'name',
       key: 'name',
-      width: '30%',
-    },
-    {
-      title: 'Fläche (m²)',
-      dataIndex: 'area',
-      key: 'area',
-      width: '15%',
-      render: (area: number | null) => area?.toFixed(2) || '-',
-    },
-    {
-      title: 'Notizen',
-      dataIndex: 'notes',
-      key: 'notes',
-      width: '30%',
-      ellipsis: true,
+      width: '55%',
     },
     {
       title: 'Aktionen',
       key: 'actions',
-      width: '10%',
+      width: '20%',
       render: (_: any, record: Types.Room) => (
         <Space>
           <Button
@@ -172,11 +169,23 @@ const RoomManager: React.FC<RoomManagerProps> = ({ projectId, zoneId }) => {
       >
         <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
           <Form.Item
-            name="roomNumber"
+            name="code"
+            label="Raumcode"
+            rules={[{ required: true, message: 'Bitte Raumcode eingeben' }]}
+          >
+            <Input placeholder="z.B. R1.01, EG-WZ" />
+          </Form.Item>
+
+          <Form.Item
+            name="number"
             label="Raumnummer"
             rules={[{ required: true, message: 'Bitte Raumnummer eingeben' }]}
           >
-            <Input placeholder="z.B. 1.01, EG.01" />
+            <InputNumber
+              style={{ width: '100%' }}
+              min={0}
+              placeholder="z.B. 1, 2, 3"
+            />
           </Form.Item>
 
           <Form.Item
@@ -185,26 +194,6 @@ const RoomManager: React.FC<RoomManagerProps> = ({ projectId, zoneId }) => {
             rules={[{ required: true, message: 'Bitte Raumnamen eingeben' }]}
           >
             <Input placeholder="z.B. Wohnzimmer, Küche" />
-          </Form.Item>
-
-          <Form.Item
-            name="area"
-            label="Fläche (m²)"
-          >
-            <InputNumber
-              style={{ width: '100%' }}
-              min={0}
-              step={0.01}
-              precision={2}
-              placeholder="z.B. 25.50"
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="notes"
-            label="Notizen"
-          >
-            <Input.TextArea rows={3} placeholder="Zusätzliche Informationen" />
           </Form.Item>
         </Form>
       </Modal>

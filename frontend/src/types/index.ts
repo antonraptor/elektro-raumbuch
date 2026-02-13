@@ -1,130 +1,88 @@
 // Entity Types based on Prisma Schema
 
 export interface Project {
-  id: number;
+  id: string;
   name: string;
   description?: string;
-  client?: string;
-  location?: string;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface Zone {
-  id: number;
-  projectId: number;
+  id: string;
+  projectId: string;
+  code: string;
   name: string;
-  description?: string;
-  sortOrder: number;
-  createdAt: string;
-  updatedAt: string;
+  order: number;
 }
 
 export interface Room {
-  id: number;
-  projectId: number;
-  zoneId: number;
-  roomNumber: string;
+  id: string;
+  zoneId: string;
+  code: string;
+  number: number;
   name: string;
-  area?: number;
-  notes?: string;
-  createdAt: string;
-  updatedAt: string;
+  order: number;
 }
 
 export interface Device {
-  id: number;
-  projectId: number;
+  id: string;
+  projectId: string;
   name: string;
   description?: string;
-  manufacturer?: string;
-  model?: string;
-  tradeId?: number;
-  categoryId?: number;
-  connectionId?: number;
-  installZoneId?: number;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
+  code?: string;
+  tradeId?: string;
+  categoryId?: string;
 }
 
 export interface RoomDevice {
-  id: number;
-  roomId: number;
-  deviceId: number;
+  id: string;
+  roomId: string;
+  deviceId?: string;
+  designation: string;
+  code?: string;
+  totalCode?: string;
+  tradeId?: string;
+  categoryId?: string;
+  connectionId?: string;
+  installZoneId?: string;
+  cableType?: string;
+  target?: string;
   quantity: number;
-  position?: string;
-  notes?: string;
-  createdAt: string;
-  updatedAt: string;
+  order: number;
 }
 
 export interface Trade {
-  id: number;
-  projectId: number;
+  id: string;
+  projectId: string;
   name: string;
-  description?: string;
-  color?: string;
-  sortOrder: number;
-  createdAt: string;
-  updatedAt: string;
+  code?: string;
+  hgNumber?: number;
+  order: number;
 }
 
 export interface Category {
-  id: number;
-  projectId: number;
-  tradeId?: number;
+  id: string;
+  tradeId: string;
   name: string;
-  description?: string;
-  sortOrder: number;
-  createdAt: string;
-  updatedAt: string;
+  code?: string;
+  order: number;
 }
 
 export interface Connection {
-  id: number;
-  projectId: number;
+  id: string;
+  projectId: string;
   name: string;
-  description?: string;
+  code?: string;
   voltage?: string;
-  sortOrder: number;
-  createdAt: string;
-  updatedAt: string;
 }
 
 export interface InstallZone {
-  id: number;
-  projectId: number;
+  id: string;
+  projectId: string;
   name: string;
-  description?: string;
-  sortOrder: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface GroupAddress {
-  id: number;
-  projectId: number;
-  roomDeviceId?: number;
-  hauptgruppe: number;
-  mittelgruppe: number;
-  untergruppe: number;
-  name: string;
-  dataType?: string;
-  description?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface DistributionBoard {
-  id: number;
-  projectId: number;
-  name: string;
-  location?: string;
-  type?: string;
-  notes?: string;
-  createdAt: string;
-  updatedAt: string;
+  code?: string;
+  order: number;
 }
 
 // API Response Types
@@ -142,133 +100,108 @@ export interface ApiError {
 export interface CreateProject {
   name: string;
   description?: string;
-  client?: string;
-  location?: string;
 }
 
 export interface UpdateProject {
   name?: string;
   description?: string;
-  client?: string;
-  location?: string;
 }
 
 export interface CreateZone {
-  projectId: number;
+  projectId: string;
+  code: string;
   name: string;
-  description?: string;
-  sortOrder: number;
+  order: number;
 }
 
 export interface UpdateZone {
-  projectId?: number;
+  code?: string;
   name?: string;
-  description?: string;
-  sortOrder?: number;
+  order?: number;
 }
 
 export interface CreateRoom {
-  projectId: number;
-  zoneId: number;
-  roomNumber: string;
+  zoneId: string;
+  code: string;
+  number: number;
   name: string;
-  area?: number;
-  notes?: string;
+  order: number;
 }
 
 export interface UpdateRoom {
-  projectId?: number;
-  zoneId?: number;
-  roomNumber?: string;
+  code?: string;
+  number?: number;
   name?: string;
-  area?: number;
-  notes?: string;
+  order?: number;
 }
 
 export interface CreateDevice {
-  projectId: number;
+  projectId: string;
   name: string;
   description?: string;
-  manufacturer?: string;
-  model?: string;
-  tradeId?: number;
-  categoryId?: number;
-  connectionId?: number;
-  installZoneId?: number;
-  isActive: boolean;
+  code?: string;
+  tradeId?: string;
+  categoryId?: string;
 }
 
 export interface UpdateDevice {
-  projectId?: number;
   name?: string;
   description?: string;
-  manufacturer?: string;
-  model?: string;
-  tradeId?: number;
-  categoryId?: number;
-  connectionId?: number;
-  installZoneId?: number;
-  isActive?: boolean;
+  code?: string;
+  tradeId?: string;
+  categoryId?: string;
 }
 
 export interface CreateTrade {
-  projectId: number;
+  projectId: string;
   name: string;
-  description?: string;
-  color?: string;
-  sortOrder: number;
+  code?: string;
+  hgNumber?: number;
+  order: number;
 }
 
 export interface UpdateTrade {
-  projectId?: number;
   name?: string;
-  description?: string;
-  color?: string;
-  sortOrder?: number;
+  code?: string;
+  hgNumber?: number;
+  order?: number;
 }
 
 export interface CreateCategory {
-  projectId: number;
-  tradeId?: number;
+  tradeId: string;
   name: string;
-  description?: string;
-  sortOrder: number;
+  code?: string;
+  order: number;
 }
 
 export interface UpdateCategory {
-  projectId?: number;
-  tradeId?: number;
   name?: string;
-  description?: string;
-  sortOrder?: number;
+  code?: string;
+  order?: number;
 }
 
 export interface CreateConnection {
-  projectId: number;
+  projectId: string;
   name: string;
-  description?: string;
+  code?: string;
   voltage?: string;
-  sortOrder: number;
 }
 
 export interface UpdateConnection {
-  projectId?: number;
   name?: string;
-  description?: string;
+  code?: string;
   voltage?: string;
-  sortOrder?: number;
 }
 
 export interface CreateInstallZone {
-  projectId: number;
+  projectId: string;
   name: string;
-  description?: string;
-  sortOrder: number;
+  code?: string;
+  order: number;
 }
 
 export interface UpdateInstallZone {
-  projectId?: number;
   name?: string;
-  description?: string;
-  sortOrder?: number;
+  code?: string;
+  order?: number;
 }

@@ -5,15 +5,15 @@ import { zoneService } from '../../services';
 import type * as Types from '../../types';
 
 interface ZoneManagerProps {
-  projectId: number;
+  projectId: string;
   onSelectZone: (zone: Types.Zone) => void;
-  selectedZoneId?: number;
+  selectedZoneId?: string;
 }
 
 const ZoneManager: React.FC<ZoneManagerProps> = ({ projectId, onSelectZone, selectedZoneId }) => {
   const [zones, setZones] = useState<Types.Zone[]>([]);
   const [loading, setLoading] = useState(false);
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
   const [form] = Form.useForm();
 
@@ -44,7 +44,10 @@ const ZoneManager: React.FC<ZoneManagerProps> = ({ projectId, onSelectZone, sele
   const handleAdd = () => {
     setIsAdding(true);
     form.resetFields();
-    form.setFieldsValue({ sortOrder: zones.length + 1 });
+    form.setFieldsValue({ 
+      code: `Z${zones.length + 1}`,
+      order: zones.length 
+    });
   };
 
   const handleSaveNew = async () => {
@@ -52,9 +55,9 @@ const ZoneManager: React.FC<ZoneManagerProps> = ({ projectId, onSelectZone, sele
       const values = await form.validateFields();
       await zoneService.create({
         projectId,
+        code: values.code,
         name: values.name,
-        description: values.description,
-        sortOrder: values.sortOrder || zones.length + 1,
+        order: values.order ?? zones.length,
       });
       message.success('Zone erstellt');
       setIsAdding(false);
@@ -89,7 +92,7 @@ const ZoneManager: React.FC<ZoneManagerProps> = ({ projectId, onSelectZone, sele
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     try {
       await zoneService.delete(id);
       message.success('Zone gelöscht');
@@ -193,24 +196,28 @@ const ZoneManager: React.FC<ZoneManagerProps> = ({ projectId, onSelectZone, sele
                 <div style={{ width: '100%' }} onClick={(e) => e.stopPropagation()}>
                   <Form form={form} layout="inline">
                     <Form.Item
+                      name="code"
+                      rules={[{ required: true, message: 'Code erforderlich' }]}
+                      style={{ marginRight: 8, width: 100 }}
+                    >
+                      <Input placeholder="Code" />
+                    </Form.Item>
+                    <Form.Item
                       name="name"
                       rules={[{ required: true, message: 'Name erforderlich' }]}
                       style={{ marginRight: 8, flex: 1 }}
                     >
                       <Input placeholder="Zonenname (z.B. EG, OG, UG)" />
                     </Form.Item>
-                    <Form.Item name="description" style={{ marginRight: 8, flex: 1 }}>
-                      <Input placeholder="Beschreibung" />
-                    </Form.Item>
-                    <Form.Item name="sortOrder" style={{ width: 80 }}>
+                    <Form.Item name="order" style={{ width: 80 }}>
                       <Input type="number" placeholder="Nr." />
                     </Form.Item>
                   </Form>
                 </div>
               ) : (
                 <List.Item.Meta
-                  title={zone.name}
-                  description={zone.description || `Sortierung: ${zone.sortOrder}`}
+                  title={`${zone.code} - ${zone.name}`}
+                  description={`Sortierung: ${zone.order}`}
                 />
               )}
             </List.Item>
@@ -222,17 +229,21 @@ const ZoneManager: React.FC<ZoneManagerProps> = ({ projectId, onSelectZone, sele
         <div style={{ padding: '16px', backgroundColor: '#f5f5f5', marginTop: 16, borderRadius: 4 }}>
           <Form form={form} layout="vertical">
             <Form.Item
+              name="code"
+              label="Code"
+              rules={[{ required: true, message: 'Bitte Code eingeben' }]}
+            >
+              <Input placeholder="z.B. Z1, EG, OG" />
+            </Form.Item>
+            <Form.Item
               name="name"
               label="Zonenname"
               rules={[{ required: true, message: 'Bitte Zonennamen eingeben' }]}
             >
-              <Input placeholder="z.B. EG, OG, UG" />
+              <Input placeholder="z.B. Erdgeschoss, Obergeschoss" />
             </Form.Item>
-            <Form.Item name="description" label="Beschreibung">
-              <Input placeholder="Optional" />
-            </Form.Item>
-            <Form.Item name="sortOrder" label="Sortierung">
-              <Input type="number" placeholder="1, 2, 3..." />
+            <Form.Item name="order" label="Sortierung">
+              <Input type="number" placeholder="0, 1, 2..." />
             </Form.Item>
             <Space>
               <Button type="primary" icon={<SaveOutlined />} onClick={handleSaveNew}>

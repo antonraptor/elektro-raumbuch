@@ -7,7 +7,7 @@ import ProjectForm from './ProjectForm';
 
 interface ProjectListProps {
   onSelectProject: (project: Types.Project) => void;
-  selectedProjectId?: number;
+  selectedProjectId?: string;
 }
 
 const ProjectList: React.FC<ProjectListProps> = ({ onSelectProject, selectedProjectId }) => {
@@ -48,7 +48,7 @@ const ProjectList: React.FC<ProjectListProps> = ({ onSelectProject, selectedProj
     setIsModalOpen(true);
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     try {
       await projectService.delete(id);
       message.success('Projekt gelöscht');
@@ -70,25 +70,13 @@ const ProjectList: React.FC<ProjectListProps> = ({ onSelectProject, selectedProj
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      width: '25%',
+      width: '40%',
     },
     {
       title: 'Beschreibung',
       dataIndex: 'description',
       key: 'description',
-      width: '30%',
-    },
-    {
-      title: 'Kunde',
-      dataIndex: 'client',
-      key: 'client',
-      width: '20%',
-    },
-    {
-      title: 'Standort',
-      dataIndex: 'location',
-      key: 'location',
-      width: '15%',
+      width: '50%',
     },
     {
       title: 'Aktionen',

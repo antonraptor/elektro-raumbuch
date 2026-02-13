@@ -79,20 +79,6 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ open, project, onSuccess, onC
         >
           <Input.TextArea rows={3} placeholder="Projektbeschreibung" />
         </Form.Item>
-
-        <Form.Item
-          name="client"
-          label="Kunde"
-        >
-          <Input placeholder="Kundenname" />
-        </Form.Item>
-
-        <Form.Item
-          name="location"
-          label="Standort"
-        >
-          <Input placeholder="Adresse oder Ort" />
-        </Form.Item>
       </Form>
     </Modal>
   );
